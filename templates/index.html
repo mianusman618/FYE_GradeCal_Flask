@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CSE1321/L Grade Calculator</title>
+    <style>
+        body { font-family: Arial; margin: 30px; background: #f7f7f7; }
+        h1 { text-align: center; color: #333; }
+        form { background: white; padding: 20px; border-radius: 8px; max-width: 1000px; margin: auto; }
+        table { width: 100%; text-align: center; border-collapse: collapse; margin-bottom: 15px; }
+        th, td { padding: 6px; }
+        input { width: 55px; text-align: center; }
+        .section-title { font-weight: bold; margin-top: 15px; }
+        .btn { background: #4CAF50; color: white; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; }
+        .btn:hover { background: #45a049; }
+        .result { margin-top: 20px; text-align: center; font-size: 1.1em; }
+    </style>
+</head>
+<body>
+    <h1>CSE1321/L Grade Calculator</h1>
+    <p style="text-align:center;">
+        Following rules are used to calculate lab grade:<br>
+        - Average your lab exercise grades (the lowest is dropped).  These are worth 10% of your overall grade.<br>
+        - Average your assignment grades (the lowest is dropped).  These are worth 40% of your overall grade<br>
+        - Your midterm grade is worth 20%<br>
+        - Your final exam grade is worth 30%.<br>
+        Note, if your final exam grade is higher than your midterm grade, it replaces your midterm grade.<br>
+        All bonus points for Tutoring are added to your final exam grades, before we do replacement of Midterms.<br><br>
+        Leave boxes empty if scores are not available. Missing entries are treated as 0 for min grade and 100 for max grade.<br>
+        If all boxes are filled you will know the exact grade according to above mentioned ditributions<br>
+    </p>
+
+    <form method="post">
+        <div class="section-title">Labs (13)</div>
+        <table>
+            <tr>
+                {% for i in range(13) %}
+                <td>Lab {{i+1}}<br>
+                    <input type="number" step="0.01" name="labs" value="{{ labs[i] }}">
+                </td>
+                {% endfor %}
+            </tr>
+        </table>
+
+        <div class="section-title">Assignments (7)</div>
+        <table>
+            <tr>
+                {% for i in range(7) %}
+                <td>A{{i+1}}<br>
+                    <input type="number" step="0.01" name="assignments" value="{{ assignments[i] }}">
+                </td>
+                {% endfor %}
+            </tr>
+        </table>
+
+        <div class="section-title">Exams and Bonus</div>
+        <table>
+            <tr>
+                <td>Mid Exam: <input type="number" step="0.01" name="mid" value="{{ mid_exam }}"></td>
+                <td>Final Exam: <input type="number" step="0.01" name="final" value="{{ final_exam }}"></td>
+                <td>Bonus: <input type="number" step="0.01" name="bonus" value="{{ bonus }}"></td>
+            </tr>
+        </table>
+
+        <div style="text-align:center;">
+            <button type="submit" class="btn">Calculate Grade</button>
+        </div>
+    </form>
+
+    {% if result %}
+    <div class="result">
+        {% if result.error %}
+            <p style="color:red;">{{result.error}}</p>
+        {% elif result.type == 'range' %}
+            <p><strong>Min Grade:</strong> {{result.min_g}} ({{"%.2f"|format(result.min_score)}}) |
+               <strong>Max Grade:</strong> {{result.max_g}} ({{"%.2f"|format(result.max_score)}})</p>
+            <p>Lab Avg Range: {{result.lab_min|round(2)}} - {{result.lab_max|round(2)}}</p>
+            <p>Assignment Avg Range: {{result.asg_min|round(2)}} - {{result.asg_max|round(2)}}</p>
+        {% else %}
+            <p><strong>Exact Grade:</strong> {{result.grade}} ({{"%.2f"|format(result.score)}})</p>
+            <p>Lab Avg: {{result.lab_avg|round(2)}} | Assignment Avg: {{result.asg_avg|round(2)}}</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</body>
+</html>
